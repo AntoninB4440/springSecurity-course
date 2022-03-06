@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import static com.antonin.springSecurity.security.config.UserPermission.*;
 import static com.antonin.springSecurity.security.config.UserRole.*;
@@ -32,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http
                 .authorizeRequests()
                 .antMatchers("/","index","/css/*","/js/*").permitAll()//Authorize request to be made
                 .antMatchers("/api/**").hasRole(STUDENT.name())
@@ -43,7 +44,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest() //AnyRequest made
                 .authenticated() //must be authenticated
                 .and()
-                .httpBasic(); //Using Basic Authentication
+                .httpBasic()//Using Basic Authentication
+                .and()
+                .csrf().disable();
+                //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()); //Add XSRF-TOKEN cookies to response
     }
 
     @Override
